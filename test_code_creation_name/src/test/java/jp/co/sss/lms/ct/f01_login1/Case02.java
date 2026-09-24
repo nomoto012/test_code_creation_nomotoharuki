@@ -102,6 +102,3 @@ public class Case02 {
 	}
 
 }
-
-//やること　assertの追加　IDとパスワードのassertのやり方があっているかはわからない　上記かtrueを使用する形か
-//クリックのassert
