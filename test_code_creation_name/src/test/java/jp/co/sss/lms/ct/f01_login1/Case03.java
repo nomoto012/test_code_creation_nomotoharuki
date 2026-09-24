@@ -62,6 +62,7 @@ public class Case03 {
 		// TODO ここに追加
 		final WebElement loginid = webDriver.findElement(By.name("loginId"));
 		final WebElement password = webDriver.findElement(By.name("password"));
+
 		final WebElement loginclick = webDriver.findElement(By.className("btn-primary"));
 
 		loginid.clear();

@@ -116,6 +116,7 @@ public class Case04 {
 		Set<String> handles = webDriver.getWindowHandles();
 
 		List<String> list = new ArrayList<>(handles);
+
 		webDriver.switchTo().window(list.get(list.size() - 1));
 
 		assertEquals(questiontitle, webDriver.getTitle());
