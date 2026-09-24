@@ -66,6 +66,10 @@ public class Case02 {
 		loginid.sendKeys("ID");
 		password.sendKeys("password");
 
+		assertNotNull(loginid);
+		assertNotNull(password);
+		assertNotNull(loginclick);
+
 		loginclick.click();
 
 		getEvidence(new Object() {
@@ -87,6 +91,10 @@ public class Case02 {
 		loginid.sendKeys("");
 		password.sendKeys("");
 
+		assertNotNull(loginid);
+		assertNotNull(password);
+		assertNotNull(loginclick);
+
 		loginclick.click();
 
 		getEvidence(new Object() {
@@ -94,3 +102,6 @@ public class Case02 {
 	}
 
 }
+
+//やること　assertの追加　IDとパスワードのassertのやり方があっているかはわからない　上記かtrueを使用する形か
+//クリックのassert
