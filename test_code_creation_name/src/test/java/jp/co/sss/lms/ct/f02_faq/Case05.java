@@ -1,6 +1,9 @@
 package jp.co.sss.lms.ct.f02_faq;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+//import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -38,6 +41,8 @@ public class Case05 {
 
 	String pass = "StudentAA022";
 
+	String word = "キャ"; //よくある質問画面でのキーワード検索テストで使用
+
 	/** 前処理 */
 	@BeforeAll
 	static void before() {
@@ -68,20 +73,20 @@ public class Case05 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 		// TODO ここに追加
-		final WebElement loginid = webDriver.findElement(By.name("loginId"));
+		final WebElement loginId = webDriver.findElement(By.name("loginId"));
 		final WebElement password = webDriver.findElement(By.name("password"));
-		final WebElement loginclick = webDriver.findElement(By.className("btn-primary"));
+		final WebElement loginClick = webDriver.findElement(By.className("btn-primary"));
 
-		loginid.clear();
+		loginId.clear();
 		password.clear();
 
-		loginid.sendKeys(id);
+		loginId.sendKeys(id);
 		password.sendKeys(pass);
 
 		assertEquals("StudentAA02", id, "ログインIDが一致していません");
 		assertEquals("StudentAA022", pass, "passwordが一致していません");
 
-		loginclick.click();
+		loginClick.click();
 
 		getEvidence(new Object() {
 		});
@@ -92,11 +97,11 @@ public class Case05 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 		// TODO ここに追加
-		final WebElement functionclick = webDriver.findElement(By.className("dropdown-toggle"));
-		functionclick.click();
+		final WebElement functionClick = webDriver.findElement(By.className("dropdown-toggle"));
+		functionClick.click();
 
-		final WebElement helpclick = webDriver.findElement(By.linkText("ヘルプ"));
-		helpclick.click();
+		final WebElement helpClick = webDriver.findElement(By.linkText("ヘルプ"));
+		helpClick.click();
 
 		assertEquals(helptitle, webDriver.getTitle());
 
@@ -109,9 +114,9 @@ public class Case05 {
 	@DisplayName("テスト04 「よくある質問」リンクからよくある質問画面を別タブに開く")
 	void test04() {
 		// TODO ここに追加
-		final WebElement questionclick = webDriver.findElement(By.linkText("よくある質問"));
+		final WebElement questionClick = webDriver.findElement(By.linkText("よくある質問"));
 
-		questionclick.click();
+		questionClick.click();
 
 		Set<String> handles = webDriver.getWindowHandles();
 
@@ -130,6 +135,31 @@ public class Case05 {
 	@DisplayName("テスト05 キーワード検索で該当キーワードを含む検索結果だけ表示")
 	void test05() {
 		// TODO ここに追加
+		final WebElement inputKeyword = webDriver.findElement(By.className("form-control"));
+		final WebElement searchClick = webDriver.findElement(By.className("btn-primary"));
+
+		inputKeyword.clear();
+
+		inputKeyword.sendKeys(word);
+
+		searchClick.click();
+
+		//検索結果のテキストを取得・検索結果の数だけ行う
+		final List<WebElement> anser = webDriver.findElements(By.className("mb10"));
+
+		for (WebElement anserElement : anser) {
+			String anserText = anserElement.getText();
+
+			//検索結果が取れているかの確認コード
+			//System.out.println("検索結果：" + anserText);
+
+			assertThat("キーワードが含まれていません", anserText, containsString(word));
+
+		}
+
+		getEvidence(new Object() {
+		});
+
 	}
 
 	@Test
@@ -137,6 +167,18 @@ public class Case05 {
 	@DisplayName("テスト06 「クリア」ボタン押下で入力したキーワードを消去")
 	void test06() {
 		// TODO ここに追加
+		final WebElement inputKeyword = webDriver.findElement(By.className("form-control"));
+		final List<WebElement> clearButton = webDriver.findElements(By.cssSelector(".btn-primary"));
+		WebElement clearClick = clearButton.get(1);
+
+		clearClick.click();
+
+		String actualValue = inputKeyword.getAttribute("value");
+
+		assertThat(actualValue, is(""));
+
+		getEvidence(new Object() {
+		});
 	}
 
 }
