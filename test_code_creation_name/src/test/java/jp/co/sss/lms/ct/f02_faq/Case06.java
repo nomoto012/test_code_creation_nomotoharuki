@@ -138,7 +138,7 @@ public class Case06 {
 
 		categoryClick.click();
 
-		final List<WebElement> anser = webDriver.findElements(By.className("mb10"));
+		final List<WebElement> question = webDriver.findElements(By.className("mb10"));
 
 		String[] questiontable = {
 				"Q.セルフ・キャリアドック制度とは何か",
@@ -148,13 +148,13 @@ public class Case06 {
 
 		int tablenumber = questionTitlenumber;
 
-		for (WebElement anserElement : anser) {
-			String anserText = anserElement.getText();
+		for (WebElement questionElement : question) {
+			String questionText = questionElement.getText();
 
 			//検索結果が取れているかの確認コード
 			//System.out.println("検索結果：" + anserText);
 
-			assertEquals(questiontable[tablenumber], anserText, "検索結果で違うものが取れています");
+			assertEquals(questiontable[tablenumber], questionText, "検索結果で違うものが取れています");
 
 			tablenumber++;
 
@@ -171,6 +171,16 @@ public class Case06 {
 	@DisplayName("テスト06 検索結果の質問をクリックしその回答を表示")
 	void test06() {
 		// TODO ここに追加
+		final WebElement question = webDriver.findElement(By.className("mb10"));
+		final WebElement answer = webDriver.findElement(By.className("dn"));
+
+		question.click();
+
+		assertTrue(answer.isDisplayed(), "answer要素が表示されていません");
+
+		getEvidence(new Object() {
+		});
+
 	}
 
 }
