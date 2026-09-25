@@ -157,8 +157,12 @@ public class Case05 {
 
 		}
 
+		scrollTo("200");
+
 		getEvidence(new Object() {
 		});
+
+		scrollTo("-200");
 
 	}
 
