@@ -1,6 +1,9 @@
 package jp.co.sss.lms.ct.f03_report;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,6 +12,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * 結合テスト レポート機能
@@ -18,6 +23,22 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(OrderAnnotation.class)
 @DisplayName("ケース07 受講生 レポート新規登録(日報) 正常系")
 public class Case07 {
+
+	String url = "http://localhost:8080/lms";
+
+	String title = "ログイン | LMS";
+
+	String helptitle = "ヘルプ | LMS";
+
+	String questiontitle = "よくある質問 | LMS";
+
+	String detailtitle = "セクション詳細 | LMS";
+
+	String id = "StudentAA02";
+
+	String pass = "StudentAA022";
+
+	int countStart = 0;
 
 	/** 前処理 */
 	@BeforeAll
@@ -36,6 +57,12 @@ public class Case07 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		// TODO ここに追加
+		goTo(url);
+
+		assertEquals(title, webDriver.getTitle());
+
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
@@ -43,6 +70,23 @@ public class Case07 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 		// TODO ここに追加
+		final WebElement loginId = webDriver.findElement(By.name("loginId"));
+		final WebElement password = webDriver.findElement(By.name("password"));
+		final WebElement loginClick = webDriver.findElement(By.className("btn-primary"));
+
+		loginId.clear();
+		password.clear();
+
+		loginId.sendKeys(id);
+		password.sendKeys(pass);
+
+		assertEquals("StudentAA02", id, "ログインIDが一致していません");
+		assertEquals("StudentAA022", pass, "passwordが一致していません");
+
+		loginClick.click();
+
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
@@ -50,6 +94,35 @@ public class Case07 {
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
 		// TODO ここに追加
+
+		int count = countStart;
+
+		final List<WebElement> noSubmitted = webDriver.findElements(By.tagName("tr"));
+
+		for (WebElement targetText : noSubmitted) {
+
+			if (targetText.getText().contains("未提出")) {
+				//Java概要の詳細ボタンを押すための条件
+				if (count == 2) {
+					final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
+
+					detailClick.click();
+
+					pageLoadTimeout(5);
+
+					break;
+				}
+			}
+			count++;
+		}
+		assertEquals(detailtitle, webDriver.getTitle());
+		getEvidence(new Object() {
+		});
+
+		//		↓xpathでのやり方
+		//		final WebElement detailClick = webDriver
+		//				.findElement(By.xpath("(//tr[contains(.,'未提出')]//input[@value='詳細'])[1]"));
+
 	}
 
 	@Test
