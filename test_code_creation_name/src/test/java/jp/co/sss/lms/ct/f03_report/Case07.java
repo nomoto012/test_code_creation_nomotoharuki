@@ -3,6 +3,7 @@ package jp.co.sss.lms.ct.f03_report;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * 結合テスト レポート機能
@@ -34,11 +37,11 @@ public class Case07 {
 
 	String detailtitle = "セクション詳細 | LMS";
 
+	String reporttitle = "レポート登録 | LMS";
+
 	String id = "StudentAA02";
 
 	String pass = "StudentAA022";
-
-	int countStart = 0;
 
 	/** 前処理 */
 	@BeforeAll
@@ -95,27 +98,27 @@ public class Case07 {
 	void test03() {
 		// TODO ここに追加
 
-		int count = countStart;
-
 		final List<WebElement> noSubmitted = webDriver.findElements(By.tagName("tr"));
 
 		for (WebElement targetText : noSubmitted) {
 
 			if (targetText.getText().contains("未提出")) {
 				//Java概要の詳細ボタンを押すための条件
-				if (count == 2) {
-					final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
+				final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
 
-					detailClick.click();
+				scrollTo("600");
 
-					pageLoadTimeout(5);
+				detailClick.click();
 
-					break;
-				}
+				break;
 			}
-			count++;
 		}
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
+
+		wait.until(ExpectedConditions.titleIs(detailtitle));
+
 		assertEquals(detailtitle, webDriver.getTitle());
+
 		getEvidence(new Object() {
 		});
 
@@ -130,6 +133,18 @@ public class Case07 {
 	@DisplayName("テスト04 「提出する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
 		// TODO ここに追加
+		final WebElement reportClick = webDriver.findElement(By.cssSelector("input[value=\"日報【デモ】を提出する\"]"));
+
+		reportClick.click();
+
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
+
+		wait.until(ExpectedConditions.titleIs(reporttitle));
+
+		assertEquals(reporttitle, webDriver.getTitle());
+
+		getEvidence(new Object() {
+		});
 	}
 
 	@Test
@@ -137,6 +152,22 @@ public class Case07 {
 	@DisplayName("テスト05 報告内容を入力して「提出する」ボタンを押下し確認ボタン名が更新される")
 	void test05() {
 		// TODO ここに追加
+		final WebElement dailyReport = webDriver.findElement(By.className("form-control"));
+		final WebElement submission = webDriver.findElement(By.className("btn-primary"));
+
+		dailyReport.clear();
+		dailyReport.sendKeys("seleniumテストコードによるテスト");
+
+		submission.click();
+
+		final WebElement checkReport = webDriver.findElement(By.cssSelector("input.btn-default"));
+
+		String actualValue = checkReport.getAttribute("value");
+
+		assertEquals("提出済み日報【デモ】を確認する", actualValue, "一致しません");
+
+		getEvidence(new Object() {
+		});
 	}
 
 }
