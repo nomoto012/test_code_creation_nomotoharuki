@@ -31,6 +31,8 @@ public class Case07 {
 
 	String title = "ログイン | LMS";
 
+	String courseTitle = "コース詳細 | LMS";
+
 	String helptitle = "ヘルプ | LMS";
 
 	String questiontitle = "よくある質問 | LMS";
@@ -62,6 +64,10 @@ public class Case07 {
 		// TODO ここに追加
 		goTo(url);
 
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(title));
+
 		assertEquals(title, webDriver.getTitle());
 
 		getEvidence(new Object() {
@@ -83,10 +89,13 @@ public class Case07 {
 		loginId.sendKeys(id);
 		password.sendKeys(pass);
 
-		assertEquals("StudentAA02", id, "ログインIDが一致していません");
-		assertEquals("StudentAA022", pass, "passwordが一致していません");
-
 		loginClick.click();
+
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(courseTitle));
+
+		assertEquals(courseTitle, webDriver.getTitle());
 
 		getEvidence(new Object() {
 		});
