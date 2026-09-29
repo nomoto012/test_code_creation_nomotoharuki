@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -30,6 +31,8 @@ public class Case08 {
 	String url = "http://localhost:8080/lms";
 
 	String title = "ログイン | LMS";
+
+	String courseTitle = "コース詳細 | LMS";
 
 	String helptitle = "ヘルプ | LMS";
 
@@ -87,10 +90,13 @@ public class Case08 {
 		loginId.sendKeys(id);
 		password.sendKeys(pass);
 
-		assertEquals("StudentAA02", id, "ログインIDが一致していません");
-		assertEquals("StudentAA022", pass, "passwordが一致していません");
-
 		loginClick.click();
+
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(courseTitle));
+
+		assertEquals(courseTitle, webDriver.getTitle());
 
 		getEvidence(new Object() {
 		});
@@ -105,7 +111,7 @@ public class Case08 {
 
 		for (WebElement targetText : noSubmitted) {
 
-			if (targetText.getText().contains("提出済み")) {
+			if (targetText.getText().contains("2025年7月9日(水)")) {
 				//Java概要の詳細ボタンを押すための条件
 				final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
 
@@ -114,7 +120,7 @@ public class Case08 {
 				break;
 			}
 		}
-		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
 
 		wait.until(ExpectedConditions.titleIs(detailtitle));
 
@@ -130,11 +136,12 @@ public class Case08 {
 	@DisplayName("テスト04 「確認する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
 		// TODO ここに追加
-		final WebElement reportClick = webDriver.findElement(By.cssSelector("input[value=\"提出済み日報【デモ】を確認する\"]"));
+		final WebElement reportClick = webDriver.findElement(By.cssSelector("input[value=\"提出済み週報【デモ】を確認する\"]"));
 
+		scrollTo("100");
 		reportClick.click();
 
-		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
 
 		wait.until(ExpectedConditions.titleIs(reporttitle));
 
@@ -149,12 +156,27 @@ public class Case08 {
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しセクション詳細画面に遷移")
 	void test05() {
 		// TODO ここに追加
-		final WebElement dailyReport = webDriver.findElement(By.className("form-control"));
+		final WebElement courseContent = webDriver.findElement(By.cssSelector("input[name=\"intFieldNameArray[0]\"]"));
+		courseContent.clear();
+		courseContent.sendKeys("seleniumテストコードによる学習項目欄のテスト 1回目以降の提出による内容が反映されているかの確認");
+
+		final Select level = new Select(
+				webDriver.findElement(By.cssSelector("select[name=\"intFieldValueArray[0]\"]")));
+		level.selectByValue("2");
+
+		final WebElement achievement = webDriver.findElement(By.cssSelector("textarea[id^='content_0']"));
+		achievement.clear();
+		achievement.sendKeys("10");
+
+		final WebElement impressions = webDriver.findElement(By.cssSelector("textarea[id^='content_1']"));
+		impressions.clear();
+		impressions.sendKeys("seleniumテストコードによる所感の欄のテスト 1回目以降の提出による内容が反映されているかの確認");
+
+		final WebElement review = webDriver.findElement(By.cssSelector("textarea[id^='content_2']"));
+		review.clear();
+		review.sendKeys("seleniumテストコードによる１週間の振り返り欄のテスト 1回目以降の提出による内容が反映されているかの確認");
+
 		final WebElement submission = webDriver.findElement(By.className("btn-primary"));
-
-		dailyReport.clear();
-		dailyReport.sendKeys("seleniumテストコードによるテスト 1回目以降の提出による内容が反映されているかの確認");
-
 		submission.click();
 
 		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
@@ -195,15 +217,17 @@ public class Case08 {
 
 		for (WebElement targetText : noSubmitted) {
 
-			if (targetText.getText().contains("2025年7月8日(火)")) {
-				//Java概要の詳細ボタンを押すための条件
-				final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
+			if (targetText.getText().contains("2025年7月9日(水)")) {
+				if (targetText.getText().contains("週報【デモ】")) {
+					//Java概要の詳細ボタンを押すための条件
+					final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
 
-				scrollTo("600");
+					scrollTo("600");
 
-				detailClick.click();
+					detailClick.click();
 
-				break;
+					break;
+				}
 			}
 		}
 
@@ -213,12 +237,25 @@ public class Case08 {
 
 		assertEquals(reportDetailTitle, webDriver.getTitle());
 
-		final List<WebElement> reportElements = webDriver.findElements(By.cssSelector(".table-hover th.wq + td"));
+		final List<WebElement> reportElements = webDriver.findElements(By.cssSelector(".table-hover td"));
 
-		final WebElement reportContent = reportElements.get(1);
+		final WebElement courseContent = reportElements.get(1);
+		assertEquals("seleniumテストコードによる学習項目欄のテスト 1回目以降の提出による内容が反映されているかの確認",
+				courseContent.getText(), "週報の内容が一致しません");
 
-		assertEquals("seleniumテストコードによるテスト 1回目以降の提出による内容が反映されているかの確認",
-				reportContent.getText(), "日報の内容が一致しません");
+		final WebElement level = reportElements.get(2);
+		assertEquals("2", level.getText(), "週報の内容が一致しません");
+
+		final WebElement achievement = reportElements.get(3);
+		assertEquals("10", achievement.getText(), "週報の内容が一致しません");
+
+		final WebElement impressions = reportElements.get(4);
+		assertEquals("seleniumテストコードによる所感の欄のテスト 1回目以降の提出による内容が反映されているかの確認",
+				impressions.getText(), "週報の内容が一致しません");
+
+		final WebElement review = reportElements.get(5);
+		assertEquals("seleniumテストコードによる１週間の振り返り欄のテスト 1回目以降の提出による内容が反映されているかの確認",
+				review.getText(), "週報の内容が一致しません");
 
 		getEvidence(new Object() {
 		});
