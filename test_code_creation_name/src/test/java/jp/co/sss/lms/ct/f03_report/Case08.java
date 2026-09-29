@@ -41,6 +41,8 @@ public class Case08 {
 
 	String usertitle = "ユーザー詳細";
 
+	String reportDetailTitle = "レポート詳細 | LMS";
+
 	String id = "StudentAA02";
 
 	String pass = "StudentAA022";
@@ -155,6 +157,12 @@ public class Case08 {
 
 		submission.click();
 
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(detailtitle));
+
+		assertEquals(detailtitle, webDriver.getTitle());
+
 		getEvidence(new Object() {
 		});
 	}
@@ -168,6 +176,10 @@ public class Case08 {
 
 		userLink.click();
 
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(usertitle));
+
 		assertEquals(usertitle, webDriver.getTitle());
 
 		getEvidence(new Object() {
@@ -179,6 +191,38 @@ public class Case08 {
 	@DisplayName("テスト07 該当レポートの「詳細」ボタンを押下しレポート詳細画面で修正内容が反映される")
 	void test07() {
 		// TODO ここに追加
+		final List<WebElement> noSubmitted = webDriver.findElements(By.tagName("tr"));
+
+		for (WebElement targetText : noSubmitted) {
+
+			if (targetText.getText().contains("2025年7月8日(火)")) {
+				//Java概要の詳細ボタンを押すための条件
+				final WebElement detailClick = targetText.findElement(By.cssSelector("input[value=\"詳細\"]"));
+
+				scrollTo("600");
+
+				detailClick.click();
+
+				break;
+			}
+		}
+
+		final WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+
+		wait.until(ExpectedConditions.titleIs(reportDetailTitle));
+
+		assertEquals(reportDetailTitle, webDriver.getTitle());
+
+		final List<WebElement> reportElements = webDriver.findElements(By.cssSelector(".table-hover th.wq + td"));
+
+		final WebElement reportContent = reportElements.get(1);
+
+		assertEquals("seleniumテストコードによるテスト 1回目以降の提出による内容が反映されているかの確認",
+				reportContent.getText(), "日報の内容が一致しません");
+
+		getEvidence(new Object() {
+		});
+
 	}
 
 }
